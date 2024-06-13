@@ -42,21 +42,17 @@ namespace App.Scripts.GameScene.Room
         [Button]
         private void GenerateGrid()
         {
+            // Создать 2 отдельных класса для генерации - пола и стен
             ClearGrid();
             RoomParametersSetup();
 
-            Vector3 floorPosition = new Vector3(_gridInitialPosition.x + (gridSize.x - 1) / 2.0f, _gridInitialPosition.y, _gridInitialPosition.z + (gridSize.y - 1) / 2.0f);
-            GameObject floorObj = Instantiate(defaultGridPrefab, floorPosition, Quaternion.identity);
-            floorObj.transform.localScale = new Vector3(gridSize.x, 0.1f, gridSize.y);
-            floorObj.transform.parent = transform;
+            GenerateFloor();
+            GenerateWalls();
+            
+        }
 
-            Renderer floorRenderer = floorObj.GetComponent<Renderer>();
-            if (floorRenderer != null)
-            {
-               floorRenderer.sharedMaterial.mainTextureScale = new Vector2(gridSize.x, gridSize.y);
-
-            }
-
+        private void GenerateWalls()
+        {
             for (int x = -1; x <= gridSize.x; x++)
             {
                 for (int z = -1; z <= gridSize.y; z++)
@@ -96,6 +92,21 @@ namespace App.Scripts.GameScene.Room
                         wallObj.transform.parent = transform;
                     }
                 }
+            }
+        }
+
+        private void GenerateFloor()
+        {
+            Vector3 floorPosition = new Vector3(_gridInitialPosition.x + (gridSize.x - 1) / 2.0f, _gridInitialPosition.y, _gridInitialPosition.z + (gridSize.y - 1) / 2.0f);
+            GameObject floorObj = Instantiate(defaultGridPrefab, floorPosition, Quaternion.identity);
+            floorObj.transform.localScale = new Vector3(gridSize.x, 0.1f, gridSize.y);
+            floorObj.transform.parent = transform;
+
+            Renderer floorRenderer = floorObj.GetComponent<Renderer>();
+            if (floorRenderer != null)
+            {
+                floorRenderer.sharedMaterial.mainTextureScale = new Vector2(gridSize.x, gridSize.y);
+
             }
         }
 

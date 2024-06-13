@@ -2792,7 +2792,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6952173690014964038, guid: b70466d3dbedecc4fa1806454556b815, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 6952173690014964038, guid: b70466d3dbedecc4fa1806454556b815, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3669,7 +3669,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 549049229727895575, guid: b8c6d12ffea615c4a948b9a063a3cd27, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 549049229727895575, guid: b8c6d12ffea615c4a948b9a063a3cd27, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3677,7 +3677,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 549049229727895575, guid: b8c6d12ffea615c4a948b9a063a3cd27, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 549049229727895575, guid: b8c6d12ffea615c4a948b9a063a3cd27, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3747,6 +3747,14 @@ PrefabInstance:
     - target: {fileID: 507229118143322384, guid: f872c684224bbae4c87a245259f9532c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 761559876236143481, guid: f872c684224bbae4c87a245259f9532c, type: 3}
+      propertyPath: m_text
+      value: Train Puzzles
+      objectReference: {fileID: 0}
+    - target: {fileID: 761559876236143481, guid: f872c684224bbae4c87a245259f9532c, type: 3}
+      propertyPath: m_fontSize
+      value: 140
       objectReference: {fileID: 0}
     - target: {fileID: 2031521691782795045, guid: f872c684224bbae4c87a245259f9532c, type: 3}
       propertyPath: m_AnchorMax.y
