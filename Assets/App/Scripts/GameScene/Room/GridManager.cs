@@ -29,7 +29,7 @@ namespace App.Scripts.GameScene.Room
 
         void Start()
         {
-           // GenerateGrid();
+            // GenerateGrid();
         }
 
         private void RoomParametersSetup()
@@ -48,7 +48,6 @@ namespace App.Scripts.GameScene.Room
 
             GenerateFloor();
             GenerateWalls();
-            
         }
 
         private void GenerateWalls()
@@ -57,36 +56,22 @@ namespace App.Scripts.GameScene.Room
             {
                 for (int z = -1; z <= gridSize.y; z++)
                 {
-                    if (x == -1 || z == -1 || x == gridSize.x || z == gridSize.y)
+                    if (IsEdgePosition(x, z) && !IsCornerPosition(x, z))
                     {
-                        Vector3 wallPosition = new Vector3(_gridInitialPosition.x + x, _gridInitialPosition.y, _gridInitialPosition.z + z);
+                        Vector3 wallPosition = new Vector3(_gridInitialPosition.x + x, _gridInitialPosition.y,
+                            _gridInitialPosition.z + z);
                         GameObject wallObj;
 
-                        bool isDoorPosition = false;
-                        switch (exitPosition)
+                        if (IsDoorPosition(x, z, out Quaternion doorRotation))
                         {
-                            case ExitPosition.Top:
-                                isDoorPosition = z == gridSize.y && x == gridSize.x / 2;
-                                break;
-                            case ExitPosition.Bottom:
-                                isDoorPosition = z == -1 && x == gridSize.x / 2;
-                                break;
-                            case ExitPosition.Left:
-                                isDoorPosition = x == -1 && z == gridSize.y / 2;
-                                break;
-                            case ExitPosition.Right:
-                                isDoorPosition = x == gridSize.x && z == gridSize.y / 2;
-                                break;
-                        }
-
-                        if (isDoorPosition)
-                        {
-                            windowPrefab = exitVariants[Random.Range(0, exitVariants.Length)];
-                            wallObj = Instantiate(windowPrefab, wallPosition + Vector3.up * _windowOffsetY, Quaternion.identity);
+                            wallObj = Instantiate(exitVariants[Random.Range(0, exitVariants.Length)],
+                                wallPosition + Vector3.up * _windowOffsetY, doorRotation);
                         }
                         else
                         {
-                            wallObj = Instantiate(wallPrefab, wallPosition + Vector3.up * _wallOffsetY, Quaternion.identity);
+                            GetWallTransformData(x, z, out Quaternion rotation, out Vector3 positionOffset);
+                            wallObj = Instantiate(wallPrefab, wallPosition + Vector3.up * _wallOffsetY + positionOffset,
+                                rotation);
                         }
 
                         wallObj.transform.parent = transform;
@@ -95,9 +80,79 @@ namespace App.Scripts.GameScene.Room
             }
         }
 
+        private bool IsEdgePosition(int x, int z)
+        {
+            return x == -1 || z == -1 || x == gridSize.x || z == gridSize.y;
+        }
+
+        private bool IsCornerPosition(int x, int z)
+        {
+            return (x == -1 && z == -1) || (x == gridSize.x && z == -1) ||
+                   (x == -1 && z == gridSize.y) || (x == gridSize.x && z == gridSize.y);
+        }
+
+        private bool IsDoorPosition(int x, int z, out Quaternion rotation)
+        {
+            var doorRotations = new Dictionary<ExitPosition, Quaternion>
+            {
+                { ExitPosition.Top, Quaternion.Euler(0, 270, 0) },
+                { ExitPosition.Bottom, Quaternion.Euler(0, 90, 0) },
+                { ExitPosition.Left, Quaternion.Euler(0, 180, 0) },
+                { ExitPosition.Right, Quaternion.Euler(0, 0, 0) }
+            };
+
+            rotation = Quaternion.identity;
+            int midX = gridSize.x / 2;
+            int midZ = gridSize.y / 2;
+
+            if (exitPosition == ExitPosition.Top && z == gridSize.y && x == midX ||
+                exitPosition == ExitPosition.Bottom && z == -1 && x == midX ||
+                exitPosition == ExitPosition.Left && x == -1 && z == midZ ||
+                exitPosition == ExitPosition.Right && x == gridSize.x && z == midZ)
+            {
+                rotation = doorRotations[exitPosition];
+                return true;
+            }
+
+            return false;
+        }
+
+        private void GetWallTransformData(int x, int z, out Quaternion rotation, out Vector3 positionOffset)
+        {
+            rotation = Quaternion.identity;
+            positionOffset = Vector3.zero;
+
+            var wallTransformData = new Dictionary<(int, int), (Quaternion, Vector3)>
+            {
+                { (-1, 0), (Quaternion.Euler(0, 90, 0), new Vector3(0.4f, 0, 0)) },
+                { (gridSize.x, 0), (Quaternion.Euler(0, 90, 0), new Vector3(-0.4f, 0, 0)) },
+                { (0, -1), (Quaternion.identity, new Vector3(0, 0, 0.4f)) },
+                { (0, gridSize.y), (Quaternion.identity, new Vector3(0, 0, -0.4f)) }
+            };
+
+            if (x == -1)
+            {
+                (rotation, positionOffset) = wallTransformData[(-1, 0)];
+            }
+            else if (x == gridSize.x)
+            {
+                (rotation, positionOffset) = wallTransformData[(gridSize.x, 0)];
+            }
+            else if (z == -1)
+            {
+                (rotation, positionOffset) = wallTransformData[(0, -1)];
+            }
+            else if (z == gridSize.y)
+            {
+                (rotation, positionOffset) = wallTransformData[(0, gridSize.y)];
+            }
+        }
+
+
         private void GenerateFloor()
         {
-            Vector3 floorPosition = new Vector3(_gridInitialPosition.x + (gridSize.x - 1) / 2.0f, _gridInitialPosition.y, _gridInitialPosition.z + (gridSize.y - 1) / 2.0f);
+            Vector3 floorPosition = new Vector3(_gridInitialPosition.x + (gridSize.x - 1) / 2.0f,
+                _gridInitialPosition.y, _gridInitialPosition.z + (gridSize.y - 1) / 2.0f);
             GameObject floorObj = Instantiate(defaultGridPrefab, floorPosition, Quaternion.identity);
             floorObj.transform.localScale = new Vector3(gridSize.x, 0.1f, gridSize.y);
             floorObj.transform.parent = transform;
@@ -106,7 +161,6 @@ namespace App.Scripts.GameScene.Room
             if (floorRenderer != null)
             {
                 floorRenderer.sharedMaterial.mainTextureScale = new Vector2(gridSize.x, gridSize.y);
-
             }
         }
 
