@@ -19,7 +19,7 @@ namespace App.Scripts.GameScene.Room
 
         void Start()
         {
-            // GenerateGrid();
+            GenerateGrid();
         }
 
         private void RoomParametersSetup()
